@@ -75,29 +75,29 @@
             'pk.eyJ1IjoidmFuZXJha2xhbiIsImEiOiJja3ZiZWJrb3hhbWViMnZuejhqc2hibWd0In0.qfRk8AfEWmxrNk4zvDUtJw';
         let map = new mapboxgl.Map({
             container: 'map', // container ID
-            style: 'mapbox://styles/mapbox/satellite-v9', // style URL
-            zoom: 5.5, // starting zoom
-            center: [138, 38] // starting center
+            style: 'mapbox://styles/mapbox/streets-v11', // style URL
+            zoom: 10, // starting zoom
+            center: [-122.33, 47.6] // starting center
         });
 
         async function geojsonFetch() {
-            let response, earthquakes, japan, table;
-            response = await fetch('assets/earthquakes.geojson');
-            earthquakes = await response.json();
-            response = await fetch('assets/japan.json');
-            japan = await response.json();
+            let response, restaurants, seattle, table;
+            response = await fetch('assets/restaurants.geojson');
+            restaurants = await response.json();
+            response = await fetch('assets/seattle.geojson');
+            seattle = await response.json();
 
             map.on('load', function loadingData() {
 
-                map.addSource('earthquakes', {
+                map.addSource('restaurants', {
                     type: 'geojson',
-                    data: earthquakes
+                    data: restaurants
                 });
 
                 map.addLayer({
-                    'id': 'earthquakes-layer',
+                    'id': 'restaurants-layer',
                     'type': 'circle',
-                    'source': 'earthquakes',
+                    'source': 'restaurants',
                     'paint': {
                         'circle-radius': 8,
                         'circle-stroke-width': 2,
@@ -107,15 +107,15 @@
                 });
 
 
-                map.addSource('japan', {
+                map.addSource('seattle', {
                     type: 'geojson',
-                    data: japan
+                    data: seattle
                 });
 
                 map.addLayer({
-                    'id': 'japan-layer',
+                    'id': 'seattle-layer',
                     'type': 'fill',
-                    'source': 'japan',
+                    'source': 'seattle',
                     'paint': {
                         'fill-color': '#0080ff', // blue color fill
                         'fill-opacity': 0.5
@@ -125,7 +125,7 @@
 
             table = document.getElementsByTagName("table")[0];
             let row, cell1, cell2, cell3;
-            for (let i = 0; i < earthquakes.features.length; i++) {
+            for (let i = 0; i < restaurants.features.length; i++) {
                 // Create an empty <tr> element and add it to the 1st position of the table:
                 row = table.insertRow(-1);
                 cell1 = row.insertCell(0);
