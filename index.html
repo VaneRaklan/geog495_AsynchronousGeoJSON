@@ -23,10 +23,24 @@
         #side-panel {
             flex-basis: 500px;
             overflow-y: scroll;
+            z-index: 10;
+            position: absolute;
+            right: 5%;
+            top: 5%;
+            background-color: rgb(17, 199, 17);
+            max-width: 33%;
+            max-height: 80%;
+        }
+
+        @media screen and (max-width: 1024px) {
+            #side-panel {
+                display: none;
+            }
         }
 
         #map {
             flex-grow: 1;
+            position: relative;
         }
 
         button {
@@ -56,14 +70,14 @@
     <main id="container">
         <div id="side-panel">
 
-            <h2>Earthquake List</h2>
+            <h2>Restaurants Open During COVID</h2>
             <button>Sort by Magnitude</button>
 
             <table>
                 <tr>
-                    <th>id</th>
-                    <th>magnitude</th>
-                    <th>timestamp</th>
+                    <th>Business Name</th>
+                    <th>Phone Number</th>
+                    <th>Website</th>
                 </tr>
             </table>
 
@@ -77,7 +91,7 @@
             container: 'map', // container ID
             style: 'mapbox://styles/mapbox/streets-v11', // style URL
             zoom: 10, // starting zoom
-            center: [-122.33, 47.6] // starting center
+            center: [-122.23, 47.6] // starting center
         });
 
         async function geojsonFetch() {
@@ -126,21 +140,24 @@
             table = document.getElementsByTagName("table")[0];
             let row, cell1, cell2, cell3;
             for (let i = 0; i < restaurants.features.length; i++) {
+                
                 // Create an empty <tr> element and add it to the 1st position of the table:
-                row = table.insertRow(-1);
-                cell1 = row.insertCell(0);
-                cell2 = row.insertCell(1);
-                cell3 = row.insertCell(2);
-                cell1.innerHTML = earthquakes.features[i].properties.id;
-                cell2.innerHTML = earthquakes.features[i].properties.mag;
-                cell3.innerHTML = new Date(earthquakes.features[i].properties.time).toLocaleDateString(
-                    "en-US");
+                if (String(restaurants.features[i].properties.address_help_your_customer_find).includes("Seattle")) {
+                    row = table.insertRow(-1);
+                    cell1 = row.insertCell(0);
+                    cell2 = row.insertCell(1);
+                    cell3 = row.insertCell(2);
+                    cell1.innerHTML = restaurants.features[i].properties.business_name;
+                    cell2.innerHTML = restaurants.features[i].properties.phone_number_to_place_an_order;
+                    cell3.innerHTML = restaurants.features[i].properties.business_website;
+                }
             }
         };
         geojsonFetch();
         //load data to the map as new layers and table on the side.
 
-
+        let btn = document.getElementsByTagName("button")[0];
+        btn.addEventListener('click', sortTable);
         // define the function to sort table
         function sortTable(e) {
             let table, rows, switching, i, x, y, shouldSwitch;
@@ -159,8 +176,8 @@
                     shouldSwitch = false;
                     /*Get the two elements you want to compare,
                     one from current row and one from the next:*/
-                    x = parseFloat(rows[i].getElementsByTagName("td")[1].innerHTML);
-                    y = parseFloat(rows[i + 1].getElementsByTagName("td")[1].innerHTML);
+                    x = rows[i].getElementsByTagName("td")[0].innerHTML;
+                    y = rows[i + 1].getElementsByTagName("td")[0].innerHTML;
                     //check if the two rows should switch place:
                     if (x < y) {
                         //if so, mark as a switch and break the loop:
